@@ -1,0 +1,55 @@
+[
+  {
+    "id": 1,
+    "name": "张三",
+    "department": "xx部",
+    "title": "老大",
+    "email": "san@xx.com",
+    "phone": "123456789",
+    "mobile": "123456789",
+    "fax": "",
+    "qq": "",
+    "wechat": "",
+    "note": "此人很帅",
+    "companyId": 1
+  }, {
+    "id": 2,
+    "name": "李四",
+    "department": "yy部",
+    "title": "老二",
+    "email": "si@yy.com",
+    "phone": "123456789",
+    "mobile": "123456789",
+    "fax": "",
+    "qq": "",
+    "wechat": "",
+    "note": "此人很帅",
+    "companyId": 2
+  }, {
+    "id": 3,
+    "name": "王五",
+    "department": "zz部",
+    "title": "老大",
+    "email": "wu@zz.com",
+    "phone": "123456789",
+    "mobile": "123456789",
+    "fax": "",
+    "qq": "",
+    "wechat": "",
+    "note": "此人很帅",
+    "companyId": 1
+  }, {
+    "id": 4,
+    "name": "赵六",
+    "department": "hh部",
+    "title": "老大",
+    "email": "san@xx.com",
+    "phone": "123456789",
+    "mobile": "123456789",
+    "fax": "",
+    "qq": "",
+    "wechat": "",
+    "note": "此人很帅",
+    "companyId": 1
+  }
+]

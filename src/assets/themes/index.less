@@ -1,0 +1,317 @@
+@import '~iview/src/styles/index.less';
+
+@font-size-base: 14px;
+@font-size-small: 13px;
+
+@border-radius-base: 0;
+@border-radius-small: 0;
+
+@primary-color: #5f9ea0;
+@info-color: #2578b5;
+@success-color: #00cc66;
+@warning-color: #b8844f;
+@error-color: #ff3300;
+
+@title-color: #eef2f6;
+@text-color: #eef2f6;
+@background-color-base: #1f2d3d;
+@body-background: #1f2d3d;
+@hover-color: tint(@body-background, 20%);
+@menu-dark-title: #485c6a;
+
+@btn-disable-color      : #5f6d7d;
+@btn-disable-bg         : transparent;
+@btn-disable-border     : #5f6d7d;
+
+@input-bg: #1f2d3d;
+@input-disabled-bg: tint(@body-background, 10%);
+@date-picker-cell-hover-bg: #5f6d7d;
+
+@table-thead-bg: #687c8a;
+@table-td-stripe-bg: tint(@body-background, 15%);
+@table-td-hover-bg: #485c6a;
+@table-td-highlight-bg: #4f657e;
+
+@body-bg: #324157;
+
+.@{menu-prefix-cls} {
+  &-vertical &-item,
+  &-vertical &-submenu-title {
+    padding: 14px 18px;
+  }
+  &-vertical &-submenu &-item {
+    padding-left: 20px;
+  }
+}
+
+.btn-default() {
+  &:hover {
+    .button-color(tint(@primary-color, 20%); @hover-color; tint(@primary-color, 20%));
+  }
+}
+
+.@{card-prefix-cls} {
+  background: @body-background;
+}
+
+.@{cascader-prefix-cls} {
+  line-height: 32px;
+  &-size-small &-label {
+    line-height: inherit;
+  }
+}
+
+.@{select-prefix-cls} {
+  &-multiple &-selection {
+    min-height: 22px;
+  }
+  &-selection {
+    background: @body-background;
+  }
+  &-multiple &-input {
+    height: @input-height-base - 10px;
+    line-height: @input-height-base - 10px;
+  }
+  &-item:hover, &-item-disabled:hover {
+    background: #485c6a;
+  }
+}
+.@{select-dropdown-prefix-cls} {
+  background: tint(@body-background, 10%);
+}
+.@{select-prefix-cls}-multiple .@{select-item-prefix-cls} {
+  &-selected {
+    color: @selected-color;
+    background: transparent;
+  }
+  &-selected:after {
+    margin-top: -7px;
+  }
+}
+
+.@{select-group-prefix-cls} {
+  &-title {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+
+.@{tag-prefix-cls} {
+  .@{tag-close-prefix-cls} {
+    color: @text-color;
+  }
+}
+
+.@{message-prefix-cls} {
+  &-notice-content {
+    background: tint(@body-background, 30%);
+  }
+}
+
+.@{collapse-prefix-cls} {
+  border-radius: @border-radius-small;
+  background-color: transparent;
+  & > &-item {
+    > .@{collapse-prefix-cls}-header {
+      padding-left: 12px;
+      color: @text-color;
+      background-color: @body-background
+    }
+  }
+  &-content{
+    background-color: transparent;
+  }
+}
+
+.@{tree-prefix-cls} {
+  li {
+    position: relative;
+    ul {
+      padding: 0 0 0 8px;
+    }
+  }
+  &-title {
+    &:hover {
+      background-color: @hover-color;
+    }
+    &-selected, &-selected:hover{
+      background-color: @hover-color;
+    }
+  }
+}
+
+.@{tabs-prefix-cls} {
+  & {
+    &&-card > &-bar &-tab-active {
+      background: @body-bg;
+      color: #fff;
+    }
+  }
+}
+
+.@{modal-prefix-cls} {
+  top: 50px;
+  &-content {
+    background-color: tint(@body-background, 10%);
+  }
+  &-close .ivu-icon-ios-close-empty:hover {
+    color: #ccc;
+  }
+}
+
+.@{spin-prefix-cls} {
+  &-fix {
+    background-color: rgba(120, 130, 150, 0.8);
+  }
+}
+
+.@{poptip-prefix-cls} {
+  &-inner {
+    background-color: tint(@body-background, 30%);
+  }
+}
+
+.@{table-prefix-cls} {
+  background-color: @body-background;
+  td {
+    background-color: @body-background;
+  }
+  &-cell {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  &-row-highlight,
+  tr&-row-highlight&-row-hover,
+  &-stripe &-body tr&-row-highlight:nth-child(2n),
+  &-stripe &-fixed-body tr&-row-highlight:nth-child(2n)
+  {
+    td {
+      background-color: @table-td-highlight-bg;
+    }
+  }
+}
+
+.input-group(@inputClass) {
+  top: 4px;
+  &-with-prepend .@{inputClass} {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  &-with-append .@{inputClass} {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  &-prepend, &-append {
+    background: transparent;
+  }
+}
+.input-group-error {
+  &-prepend, &-append {
+    background-color: #fff;
+  }
+}
+
+.@{input-number-prefix-cls} {
+  &-input {
+    background: @input-bg;
+    color: @text-color;
+  }
+  &-handler-wrap {
+    background: @input-bg;
+  }
+  &-disabled {
+    .@{input-number-prefix-cls}-input {
+      background-color: @input-disabled-bg;
+    }
+  }
+}
+
+.ivu-form-item .ivu-input-wrapper-small .ivu-input-icon {
+  line-height: @input-height-small;
+}
+
+.@{page-prefix-cls} {
+  &-prev, &-next, &-item {
+    background-color: transparent;
+  }
+  &-item-active {
+    background-color: #485c6a;
+  }
+}
+
+@steps-wait-title-color: @title-color;
+@steps-title-color: @title-color;
+.@{card-prefix-cls} {
+  .@{steps-prefix-cls} {
+    &-item {
+      &.@{steps-prefix-cls}-status-wait {
+        .@{steps-prefix-cls}-head-inner {
+          background-color: @body-background;
+        }
+      }
+      &.@{steps-prefix-cls}-status-finish {
+        .@{steps-prefix-cls}-head-inner {
+          background-color: @body-background;
+        }
+      }
+      &.@{steps-prefix-cls}-status-error {
+        .@{steps-prefix-cls}-head-inner {
+          background-color: @body-background;
+        }
+      }
+      .@{steps-prefix-cls}-head {
+        background: @body-background;
+      }
+      .@{steps-prefix-cls}-title {
+        background: @body-background;
+      }
+    }
+  }
+}
+.@{steps-prefix-cls} {
+  &-item {
+    &.@{steps-prefix-cls}-status-wait {
+      .@{steps-prefix-cls}-head-inner {
+        background-color: @body-bg;
+      }
+    }
+    &.@{steps-prefix-cls}-status-finish {
+      .@{steps-prefix-cls}-head-inner {
+        background-color: @body-bg;
+      }
+    }
+    &.@{steps-prefix-cls}-status-error {
+      .@{steps-prefix-cls}-head-inner {
+        background-color: @body-bg;
+      }
+    }
+    .@{steps-prefix-cls}-head {
+      background: @body-bg;
+    }
+    .@{steps-prefix-cls}-title {
+      background: @body-bg;
+    }
+    .@{steps-prefix-cls}-content {
+      color: @title-color;
+    }
+  }
+  &.@{steps-prefix-cls}-small {
+    .@{steps-prefix-cls}-title {
+      color: @title-color;
+    }
+  }
+}
+
+.@{page-prefix-cls} {
+  &-prev, &-next {
+    a {
+      color: @text-color
+    }
+  }
+  &-disabled {
+    a {
+      color: @btn-disable-color
+    }
+  }
+}

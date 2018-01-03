@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "name": "RG LA4320系列无线网关产品",
+    "model": "XLA4320",
+    "category": "switch",
+    "vendor": "RG",
+    "retailPrice": 1400,
+    "finalistPrice": 1200,
+    "isAvaiable": true,
+    "parameter": "支持open system/shared key认证\n支持广播Probe请求应答控制\n支持WPA、WPA2、Pre-RSNA用户混合接入\n支持RTS/CTS\n支持CTS-to-self\n支持隐藏SSID",
+    "description": "支持WMM队列管理\n支持优先级映射\n基于客户端的智能带宽控制",
+    "note": ""
+  }, {
+    "id": 2,
+    "name": "RG LA4321系列无线网关产品",
+    "model": "XLA4321",
+    "category": "server",
+    "vendor": "RG",
+    "retailPrice": 1500,
+    "finalistPrice": 1100,
+    "isAvaiable": true,
+    "parameter": "支持open system/shared key认证\n支持广播Probe请求应答控制\n支持WPA、WPA2、Pre-RSNA用户混合接入\n支持RTS/CTS\n支持CTS-to-self\n支持隐藏SSID",
+    "description": "支持WMM队列管理\n支持优先级映射\n基于客户端的智能带宽控制",
+    "note": ""
+  }, {
+    "id": 3,
+    "name": "H3C LA4322系列无线网关产品",
+    "model": "XLA4322",
+    "category": "switch",
+    "vendor": "H3C",
+    "retailPrice": 1600,
+    "finalistPrice": 1200,
+    "isAvaiable": true,
+    "parameter": "支持open system/shared key认证\n支持广播Probe请求应答控制\n支持WPA、WPA2、Pre-RSNA用户混合接入\n支持RTS/CTS\n支持CTS-to-self\n支持隐藏SSID",
+    "description": "支持WMM队列管理\n支持优先级映射\n基于客户端的智能带宽控制",
+    "note": ""
+  }, {
+    "id": 4,
+    "name": "H3C LA4323系列无线网关产品",
+    "model": "XLA4323",
+    "category": "server",
+    "vendor": "H3C",
+    "retailPrice": 1700,
+    "finalistPrice": 1200,
+    "isAvaiable": true,
+    "parameter": "支持open system/shared key认证\n支持广播Probe请求应答控制\n支持WPA、WPA2、Pre-RSNA用户混合接入\n支持RTS/CTS\n支持CTS-to-self\n支持隐藏SSID",
+    "description": "支持WMM队列管理\n支持优先级映射\n基于客户端的智能带宽控制",
+    "note": ""
+  }
+]

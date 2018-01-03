@@ -1,0 +1,91 @@
+[
+  {
+    "id": 1,
+    "name": "浙商银行温州分行新城支行",
+    "code": "zsyhwzfhxczh",
+    "type": 1,
+    "category": 1,
+    "region": "杭州",
+    "address": "",
+    "description": "",
+    "level": 1,
+    "zipcode": "",
+    "site": "",
+    "fund": "",
+    "staff": 100,
+    "note": "",
+    "billing": {
+      "taxNum": "1111",
+      "bank": "",
+      "account": "",
+      "title": ""
+    },
+    "updatedBy": 1
+  }, {
+    "id": 2,
+    "name": "浙江省公众信息产业有限公司",
+    "code": "zjgzxxcyyxgs",
+    "type": 2,
+    "category": 1,
+    "region": "台州",
+    "address": "",
+    "description": "",
+    "level": 1,
+    "zipcode": "",
+    "site": "",
+    "fund": "",
+    "staff": 100,
+    "note": "",
+    "billing": {
+      "taxNum": "1111",
+      "bank": "",
+      "account": "",
+      "title": ""
+    },
+    "updatedBy": 1
+  }, {
+    "id": 3,
+    "name": "浙商银行",
+    "code": "zsyh",
+    "type": 3,
+    "category": 1,
+    "region": "杭州",
+    "address": "",
+    "description": "",
+    "level": 1,
+    "zipcode": "",
+    "site": "",
+    "fund": "",
+    "staff": 100,
+    "note": "",
+    "billing": {
+      "taxNum": "1111",
+      "bank": "",
+      "account": "",
+      "title": ""
+    },
+    "updatedBy": 1
+  }, {
+    "id": 4,
+    "name": "公司4",
+    "code": "ABCDE",
+    "type": 4,
+    "category": 1,
+    "region": "绍兴",
+    "address": "",
+    "description": "",
+    "level": 1,
+    "zipcode": "",
+    "site": "",
+    "fund": "",
+    "staff": 100,
+    "note": "",
+    "billing": {
+      "taxNum": "1111",
+      "bank": "",
+      "account": "",
+      "title": ""
+    },
+    "updatedBy": 1
+  }
+]
