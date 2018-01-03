@@ -330,7 +330,7 @@ export default {
       name: 'project',
       GET_ACTION: 'GET_PROJECT',
       POST_ACTION: 'POST_PROJECT',
-      fetchUsers: true,
+      prefetchUsers: true,
       labels,
       showAllProgress: false
     }
