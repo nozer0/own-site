@@ -1,13 +1,13 @@
 export default {
-  BASE: 'http://localhost:3000/v1',
+  BASE: 'http://192.168.100.220:3000/v1',
   WORK_TYPES: ['售前技术交流', '地勘', '售前测试', '项目实施', '故障运维', '其他'],
   WORK_STEPS: ['草稿', '分派', '审批', '实施', '结果审核', '反馈', '完结'],
   FAULTS: ['实施疏漏', '操作不当', '产品故障', '不可抗因素', '其他'],
-  // 0:customer, 1:operator, 2:vendor, 3: supplier, 4:integrator, 5: agent
-  COMPANY_TYPES: ['客户', '运营商', '厂商', '供货商', '集成商', '代理商'],
+  // 0:customer, 1:operator, 2:integrator, 3:vendor, 4: supplier, 5: agent
+  COMPANY_TYPES: ['客户', '运营商', '集成商', '厂商', '供货商', '代理商'],
   PROJECT: {
-    CATEGORIES: ['产品销售', '软件销售', '系统集成', '服务'],
-    TYPES: ['平台', '拓展'],
+    TYPES: ['产品销售', '软件销售', '系统集成', '服务'],
+    CATEGORIES: ['平台', '拓展'],
     PHASES: ['商机挖掘', '项目立项与资金到位', '技术认可', '用户及合作厂家分析', '引导招投标工作', '中标及下单', '开票与回款']
   },
   PRODUCT: {

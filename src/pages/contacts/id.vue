@@ -3,64 +3,64 @@
     <Row>
       <Col :xs="12">
         <FormItem label="姓名" prop="name">
-          <Input v-model="currentData.name" size="small" :disabled="disabled"></Input>
+          <Input v-model="currentData.name" size="small" :disabled="freezed"></Input>
         </FormItem>
       </Col>
       <Col :xs="12" v-if="!embed">
         <FormItem label="公司">
-          <Input v-if="data && data.company" size="small" readonly :disabled="disabled" :value="currentData.companyName"></Input>
-          <CompanySelect ref="select" v-else size="small" :disabled="disabled" @on-change="handleCompanySelect"></CompanySelect>
+          <Input v-if="data && data.company" size="small" readonly :disabled="freezed" :value="currentData.companyName"></Input>
+          <CompanySelect ref="select" v-else size="small" :disabled="freezed" @on-change="handleCompanySelect"></CompanySelect>
         </FormItem>
       </Col>
       <Col :xs="12">
         <FormItem label="部门">
-          <Input v-model="currentData.department" size="small" :disabled="disabled"></Input>
+          <Input v-model="currentData.department" size="small" :disabled="freezed"></Input>
         </FormItem>
       </Col>
       <Col :xs="12">
         <FormItem label="职位">
-          <Input v-model="currentData.title" size="small" :disabled="disabled"></Input>
+          <Input v-model="currentData.title" size="small" :disabled="freezed"></Input>
         </FormItem>
       </Col>
     </Row>
     <Row>
       <Col :xs="12">
         <FormItem label="Email" prop="email">
-          <Input v-model="currentData.email" size="small" :disabled="disabled"></Input>
+          <Input v-model="currentData.email" size="small" :disabled="freezed"></Input>
         </FormItem>
       </Col>
       <Col :xs="12">
         <FormItem label="电话">
-          <Input v-model="currentData.phone" size="small" :disabled="disabled"></Input>
+          <Input v-model="currentData.phone" size="small" :disabled="freezed"></Input>
         </FormItem>
       </Col>
     </Row>
     <Row>
       <Col :xs="12">
         <FormItem label="传真">
-          <Input v-model="currentData.fax" size="small" :disabled="disabled"></Input>
+          <Input v-model="currentData.fax" size="small" :disabled="freezed"></Input>
         </FormItem>
       </Col>
       <Col :xs="12">
         <FormItem label="QQ">
-          <Input v-model="currentData.qq" size="small" :disabled="disabled"></Input>
+          <Input v-model="currentData.qq" size="small" :disabled="freezed"></Input>
         </FormItem>
       </Col>
       <Col :xs="12">
         <FormItem label="微信">
-          <Input v-model="currentData.wechat" size="small" :disabled="disabled"></Input>
+          <Input v-model="currentData.wechat" size="small" :disabled="freezed"></Input>
         </FormItem>
       </Col>
     </Row>
     <FormItem label="备注">
-      <Input type="textarea" :autosize="{minRows: 2}" v-model="currentData.note" size="small" :disabled="disabled"></Input>
+      <Input type="textarea" :autosize="{minRows: 2}" v-model="currentData.note" size="small" :disabled="freezed"></Input>
     </FormItem>
     <Row>
       <Col :xs="24" :sm="12">
-        <FormItem label="创建">{{ createdBy }}（{{ currentData.createdAt | toDateString }}）</FormItem>
+        <FormItem label="创建">{{ createdBy }} ({{ currentData.createdAt | toDateString }})</FormItem>
       </Col>
       <Col :xs="24" :sm="12">
-        <FormItem label="修改">{{ updatedBy }}（{{ currentData.updatedAt | toDateString }}）</FormItem>
+        <FormItem label="修改">{{ updatedBy }} ({{ currentData.updatedAt | toDateString }})</FormItem>
       </Col>
     </Row>
     

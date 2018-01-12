@@ -3,14 +3,14 @@
     <Row>
       <Col :xs="12">
         <FormItem label="分类" prop="category">
-          <Select size="small" v-model="currentData.category" :disabled="disabled">
+          <Select size="small" v-model="currentData.category" :disabled="freezed">
             <Option v-for="(label, id) in CATEGORIES" :key="id" :label="label" :value="id"></Option>
           </Select>
         </FormItem>
       </Col>
       <Col :xs="12">
         <FormItem label="厂商" prop="vendor">
-          <Select size="small" v-model="currentData.vendor" :disabled="disabled">
+          <Select size="small" v-model="currentData.vendor" :disabled="freezed">
             <Option v-for="(label, id) in VENDORS" :key="id" :label="label" :value="id"></Option>
           </Select>
         </FormItem>
@@ -19,42 +19,42 @@
     <Row>
       <Col :xs="16" :sm="12">
         <FormItem label="型号" prop="model">
-          <Input v-model="currentData.model" size="small" :disabled="disabled"></Input>
+          <Input v-model="currentData.model" size="small" :disabled="freezed"></Input>
         </FormItem>
       </Col>
       <Col :xs="16" :sm="12">
         <FormItem label="名称">
-          <Input v-model="currentData.name" size="small" :disabled="disabled"></Input>
+          <Input v-model="currentData.name" size="small" :disabled="freezed"></Input>
         </FormItem>
       </Col>
     </Row>
     <Row>
       <Col :xs="12">
         <FormItem label="零售价" prop="retailPrice">
-          <Input v-model.number="currentData.retailPrice" size="small" :disabled="disabled"><template slot="append">元</template></Input>
+          <Input v-model.number="currentData.retailPrice" size="small" :disabled="freezed"><template slot="append">元</template></Input>
         </FormItem>
       </Col>
       <Col :xs="12">
         <FormItem label="集采价" prop="finalistPrice">
-          <Input v-model.number="currentData.finalistPrice" size="small" :disabled="disabled"><template slot="append">元</template></Input>
+          <Input v-model.number="currentData.finalistPrice" size="small" :disabled="freezed"><template slot="append">元</template></Input>
         </FormItem>
       </Col>
     </Row>
     <FormItem label="参数">
-      <Input v-model="currentData.parameter" type="textarea" :autosize="{minRows:2}" size="small" :disabled="disabled"></Input>
+      <Input v-model="currentData.parameter" type="textarea" :autosize="{minRows:2}" size="small" :disabled="freezed"></Input>
     </FormItem>
     <FormItem label="描述">
-      <Input v-model="currentData.description" type="textarea" :autosize="{minRows:2}" size="small" :disabled="disabled"></Input>
+      <Input v-model="currentData.description" type="textarea" :autosize="{minRows:2}" size="small" :disabled="freezed"></Input>
     </FormItem>
     <FormItem label="备注">
-      <Input v-model="currentData.note" type="textarea" :autosize="{minRows:2}" size="small" :disabled="disabled"></Input>
+      <Input v-model="currentData.note" type="textarea" :autosize="{minRows:2}" size="small" :disabled="freezed"></Input>
     </FormItem>
     <Row>
       <Col :xs="24" :sm="12">
-        <FormItem label="创建">{{ createdBy }}（{{ currentData.createdAt | toDateString }}）</FormItem>
+        <FormItem label="创建">{{ createdBy }} ({{ currentData.createdAt | toDateString }})</FormItem>
       </Col>
       <Col :xs="24" :sm="12">
-        <FormItem label="修改">{{ updatedBy }}（{{ currentData.updatedAt | toDateString }}）</FormItem>
+        <FormItem label="修改">{{ updatedBy }} ({{ currentData.updatedAt | toDateString }})</FormItem>
       </Col>
     </Row>
     <!-- <config-form :configs="configs"></config-form> -->

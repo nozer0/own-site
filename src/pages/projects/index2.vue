@@ -18,7 +18,7 @@
         </Poptip>
       </FormItem>
     </Form>
-    <Table ref="table" :data="dataArray" :columns="columns" :loading="loading" size="small" highlight-row border stripe @on-current-change="handleSelect" @on-row-dblclick="handleEdit"></Table>
+    <Table ref="table" :data="dataArray" :columns="columns" :loading="loading" size="small" highlight-row border stripe @on-row-click="handleSelect" @on-row-dblclick="handleEdit"></Table>
     <div style="margin: 10px; overflow: hidden">
       <div style="text-align: right">
         <Page size="small" :page-size="25" :total="total" :current.sync="currentPage"></Page>

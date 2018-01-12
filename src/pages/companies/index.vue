@@ -10,7 +10,7 @@
         <RegionSelect ref="regionSelect" :disabled="loading || !currentUser" @on-change="handleRegionQuery" size="small"></RegionSelect>
       </FormItem>
       <FormItem label="名称">
-        <CompanySelect ref="companySelect" style="width: 200px" :disabled="loading || !currentUser" :type="$route.query.type" @on-change="handleCompanyQuery"></CompanySelect>
+        <CompanySelect ref="companySelect" style="width: 320px" :disabled="loading || !currentUser" :region="query.region" :type="$route.query.type" @on-change="handleCompanyQuery"></CompanySelect>
       </FormItem>
       <FormItem class="buttons">
         <Button type="ghost" size="small" icon="plus" :disabled="!addable" @click.stop.prevent="handleAdd">新增</Button>
@@ -31,15 +31,19 @@
         <Button @click="test"></Button>
       </FormItem>
     </Form>
-    <Table ref="table" :data="dataArray" :columns="columns" :loading="loading" size="small" highlight-row border stripe @on-current-change="handleSelect" @on-row-dblclick="handleEdit"></Table>
+    <Table ref="table" :data="dataArray" :columns="columns" :loading="loading" size="small" highlight-row border stripe @on-row-click="handleSelect" @on-row-dblclick="handleEdit"></Table>
     <div style="margin: 10px; overflow: hidden">
       <div style="text-align: right">
         <Page size="small" :page-size="query.size" :total="total" :current.sync="currentPage"></Page>
       </div>
     </div>
 
-    <Modal title="公司信息" v-model="isDialogVisible" width="720" transfer :mask-closable="false">
-      <Company ref="company" :cancelable="true" :readonly="readonly" :data="currentData" @save="handleSave" @cancel="handleCancel"></Company>
+    <Modal ref="modal" v-model="isDialogVisible" transfer :mask-closable="false" width="80%" :class-name="modalClass">
+      <div slot="header" style="margin-right: 20px" @click="toggleFullScreen">
+        公司信息
+        <Icon :type="modalClass === 'normal' ? 'arrow-expand' : 'arrow-shrink'" class="zoom" @click="toggleFullScreen"></Icon>
+      </div>
+      <Company v-if="currentData" ref="company" :cancelable="true" :readonly="disabled" :data="currentData" @save="handleSave" @cancel="handleCancel"></Company>
       <div slot="footer"></div>
     </Modal>
 
@@ -76,8 +80,9 @@ const { COMPANY_TYPES } = config
 export default {
   mixins: [mixin, uploadMixin],
   components: { RegionSelect, CompanySelect, Company: () => import('./id') },
+  props: ['type'],
   data () {
-    let type = this.$route.query.type
+    // let type = this.$route.query.type
     return {
       FETCH_ACTION: 'FETCH_COMPANIES',
       GET_ACTION: 'GET_COMPANY',
@@ -85,9 +90,9 @@ export default {
       STORE_NAME: 'companies',
       UPLOAD_URL: config.BASE + '/companies/import',
       COMPANY_TYPES,
-      fetchUsers: true,
+      prefetchUserNames: true,
       query: {
-        type: type && +type,
+        type: ~~this.type,
         id: null,
         region: null
       }
@@ -191,8 +196,7 @@ export default {
           key: 'createdBy',
           width: 80,
           render (h, { row }) {
-            let id = row.createdBy
-            let user = state.users && state.users.find(u => u._id === id)
+            let user = state.userNames[row.createdBy]
             return user && user.name
           }
         },
@@ -217,6 +221,15 @@ export default {
       ]
     }
   },
+  watch: {
+    type (newValue, oldValue) {
+      if (newValue === oldValue) return
+      this.query.type = newValue
+      this.$refs.companySelect.init = false
+      this.query.offset = 0
+      this.fetchArray()
+    }
+  },
   methods: {
     handleAdd () {
       this.isNew = true
@@ -235,6 +248,7 @@ export default {
     handleRegionQuery (value) {
       this.query.offset = 0
       this.query.region = value.length ? value[value.length - 1] : null
+      this.$refs.companySelect.init = false
       this.fetchArray()
     },
     handleCompanyQuery (value) {
@@ -247,8 +261,9 @@ export default {
       return (!query.id || query.id === data._id) && (!Number.isInteger(query.type) || data.type === query.type) && (!query.region || data.region === query.region)
     }
   },
-  beforeRouteUpdate (to, from, next) {
-    this.query.type = to.query.type && +to.query.type
+  beforeRouteUpdate2 (to, from, next) {
+    console.info(this.type, this.query)
+    this.query.type = this.type// to.query.type && +to.query.type
     this.$refs.companySelect.init = false
     this.query.offset = 0
     this.fetchArray()

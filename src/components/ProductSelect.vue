@@ -12,6 +12,7 @@ import mixin from './SelectMixin'
 export default {
   name: 'ProductSelect',
   mixins: [mixin],
+  props: ['category', 'vendor'],
   data () {
     return {
       QUERY_ACTION: 'QUERY_PRODUCT_NAMES',
@@ -20,6 +21,15 @@ export default {
     }
   },
   methods: {
+    getQueryOptions (val) {
+      let category = this.category
+      let vendor = this.vendor
+      if (!category && !vendor) return val
+      let opt = { keyword: val }
+      if (category) opt.category = category
+      if (vendor) opt.vendor = vendor
+      return opt
+    },
     setOptions (data) {
       let vendors = {}
       let options = []

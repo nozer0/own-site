@@ -2,23 +2,27 @@
   <div>
     <Form inline :label-width="38">
       <FormItem label="项目">
-        <ProjectSelect ref="projectSelect" size="small" @on-change="handleProjectQuery"></ProjectSelect>
+        <ProjectSelect ref="projectSelect" style="width: 320px" size="small" @on-change="handleProjectQuery"></ProjectSelect>
       </FormItem>
       <FormItem class="buttons">
-        <Button type="ghost" size="small" icon="plus" :disabled="loading" @click.stop.prevent="handleAdd">新增</Button>
-        <Button type="ghost" size="small" icon="edit" :disabled="disabled" @click.stop.prevent="handleEdit">编辑</Button>
+        <Button type="ghost" size="small" icon="plus" :disabled="!addable" @click.stop.prevent="handleAdd">新增</Button>
+        <Button type="ghost" size="small" icon="edit" :disabled="!editable" @click.stop.prevent="handleEdit">编辑</Button>
         <Button size="small" @click="test"></Button>
       </FormItem>
     </Form>
-    <Table ref="table" :data="dataArray" :columns="columns" :loading="loading" size="small" highlight-row border stripe @on-current-change="handleSelect" @on-row-dblclick="handleEdit"></Table>
+    <Table ref="table" :data="dataArray" :columns="columns" :loading="loading" size="small" highlight-row border stripe @on-row-click="handleSelect" @on-row-dblclick="handleEdit"></Table>
     <div style="margin: 10px; overflow: hidden">
       <div style="text-align: right">
         <Page size="small" :page-size="25" :total="total" :current.sync="currentPage"></Page>
       </div>
     </div>
 
-    <Modal title="清单" v-model="isDialogVisible" width="960" transfer>
-      <Inventory ref="visit" :cancelable="true" :readonly="readonly" :data="currentData" @save="handleSave" @cancel="handleCancel"></Inventory>
+    <Modal ref="modal" v-model="isDialogVisible" transfer :mask-closable="false" width="80%" :class-name="modalClass">
+      <div slot="header" style="margin-right: 20px" @click="toggleFullScreen">
+        清单信息
+        <Icon :type="modalClass === 'normal' ? 'arrow-expand' : 'arrow-shrink'" class="zoom" @click="toggleFullScreen"></Icon>
+      </div>
+      <Inventory v-if="currentData" ref="inventory" :cancelable="true" :readonly="disabled" :data="currentData" @save="handleSave" @cancel="handleCancel"></Inventory>
       <div slot="footer"></div>
     </Modal>
   </div>
@@ -36,7 +40,8 @@ export default {
   data () {
     return {
       FETCH_ACTION: 'FETCH_INVENTORIES',
-      DELETE_ACTION: 'DELETE_INVENTORY'
+      DELETE_ACTION: 'DELETE_INVENTORY',
+      prefetchUserNames: true
     }
   },
   computed: {
@@ -59,8 +64,7 @@ export default {
           key: 'createdBy',
           width: 64,
           render (h, { row }) {
-            let id = row.createdBy
-            let user = state.users.find(u => u._id === id)
+            let user = state.userNames[row.createdBy]
             return user && user.name
           }
         },
@@ -91,6 +95,12 @@ export default {
     }
   },
   methods: {
+    toggleFullScreen () {
+      this.modalClass = this.modalClass === 'normal' ? 'fullscreen' : 'normal'
+      this.$nextTick(() => {
+        this.$refs.inventory.$refs.table.table.view.wt.wtScroll.instance.draw()
+      })
+    },
     handleProjectQuery (value) {
       this.query.projectId = value
       this.fetchArray()
@@ -100,13 +110,6 @@ export default {
       let data = this.currentData
       return (!query.projectId || data.projectId === query.projectId)
     }
-  },
-  async beforeMount () {
-    let store = this.$store
-    if (store.state.users) return
-    this.loading = true
-    await store.dispatch('FETCH_USERS')
-    this.loading = false
   }
 }
 </script>

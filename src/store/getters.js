@@ -26,24 +26,59 @@ export default {
     return +newId + 1
   },
   managers (state) {
-    let users = state.users
-    return users ? users.filter(u => u.role === 0) : []
+    let userNames = state.userNames
+    let ret = []
+    for (let id in userNames) {
+      let u = userNames[id]
+      if (u.role === 0) {
+        ret.push(u)
+      }
+    }
+    return ret
   },
   salesmen (state) {
-    let users = state.users
-    return users ? users.filter(u => u.role === 1) : []
+    let userNames = state.userNames
+    let ret = []
+    for (let id in userNames) {
+      let u = userNames[id]
+      if (u.role === 1) {
+        ret.push(u)
+      }
+    }
+    return ret
   },
   supportmen (state) {
-    let users = state.users
-    return users ? users.filter(u => u.role === 2) : []
+    let userNames = state.userNames
+    let ret = []
+    for (let id in userNames) {
+      let u = userNames[id]
+      if (u.role === 2) {
+        ret.push(u)
+      }
+    }
+    return ret
   },
   engineers (state) {
-    let users = state.users
-    return users ? users.filter(u => u.role === 3) : []
+    let userNames = state.userNames
+    let ret = []
+    for (let id in userNames) {
+      let u = userNames[id]
+      if (u.role === 3) {
+        ret.push(u)
+      }
+    }
+    return ret
   },
   techonicians (state) {
-    let users = state.users
-    return users ? users.filter(u => u.role === 2 || u.role === 3) : []
+    let userNames = state.userNames
+    let ret = []
+    for (let id in userNames) {
+      let u = userNames[id]
+      if (u.role === 2 || u.role === 3) {
+        ret.push(u)
+      }
+    }
+    return ret
   },
   // ids of the items that should be currently displayed based on
   // current list type and current pagination

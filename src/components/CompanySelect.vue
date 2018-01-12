@@ -11,7 +11,7 @@
 import mixin from './SelectMixin'
 
 export default {
-  props: ['type'],
+  props: ['type', 'region'],
   name: 'CompanySelect',
   mixins: [mixin],
   data () {
@@ -23,7 +23,13 @@ export default {
   },
   methods: {
     getQueryOptions (val) {
-      return isNaN(this.type) ? val : { keyword: val, type: +this.type }
+      let type = this.type
+      let region = this.region
+      if (isNaN(type) && !region) return val
+      let opt = { keyword: val }
+      if (!isNaN(type)) opt.type = +type
+      if (region) opt.region = region
+      return opt
     },
     setOptions (data) {
       let regions = {}

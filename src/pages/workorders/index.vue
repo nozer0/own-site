@@ -2,7 +2,7 @@
   <div>
     <Form inline :label-width="38">
       <FormItem label="项目">
-        <ProjectSelect ref="projectSelect" size="small" @on-change="handleProjectQuery"></ProjectSelect>
+        <ProjectSelect ref="projectSelect" style="width: 320px" size="small" @on-change="handleProjectQuery"></ProjectSelect>
       </FormItem>
       <FormItem label="阶段" v-show="!('draft' in $route.query || 'finish' in $route.query)">
         <Select clearable size="small" style="width: 150px" @on-change="handleStepQuery">
@@ -11,24 +11,28 @@
       </FormItem>
       <FormItem label="创建人" :label-width="51">
         <Select filterable clearable size="small" @on-change="handleCreatorQuery">
-          <Option v-for="item in users" :label="item.name" :value="item._id" :key="item._id">{{ item.name }} ( {{ item.username }} )</Option>
+          <Option v-for="item in userNames" :label="item.name" :value="item._id" :key="item._id">{{ item.name }} ( {{ item.username }} )</Option>
         </Select>
       </FormItem>
       <FormItem class="buttons">
-        <Button v-show="addable" type="ghost" size="small" icon="plus" :disabled="loading" @click.stop.prevent="handleAdd">新增</Button>
-        <Button type="ghost" size="small" icon="edit" :disabled="disabled" @click.stop.prevent="handleEdit">编辑</Button>
+        <Button type="ghost" size="small" icon="plus" :disabled="!addable" @click.stop.prevent="handleAdd">新增</Button>
+        <Button type="ghost" size="small" icon="edit" :disabled="!editable" @click.stop.prevent="handleEdit">编辑</Button>
         <Button size="small" @click="test"></Button>
       </FormItem>
     </Form>
-    <Table ref="table" :data="dataArray" :columns="columns" :loading="loading" size="small" highlight-row border stripe @on-current-change="handleSelect" @on-row-dblclick="handleEdit"></Table>
+    <Table ref="table" :data="dataArray" :columns="columns" :loading="loading" size="small" highlight-row border stripe @on-row-click="handleSelect" @on-row-dblclick="handleEdit"></Table>
     <div style="margin: 10px; overflow: hidden">
       <div style="text-align: right">
         <Page size="small" :page-size="25" :total="total" :current.sync="currentPage"></Page>
       </div>
     </div>
 
-    <Modal title="工单信息" v-model="isDialogVisible" width="720" transfer>
-      <WorkOrder ref="workorder" :cancelable="true" :readonly="readonly || disabled" :data="currentData" @save="handleSave" @cancel="handleCancel"></WorkOrder>
+    <Modal ref="modal" v-model="isDialogVisible" transfer :mask-closable="false" width="80%" :class-name="modalClass">
+      <div slot="header" style="margin-right: 20px" @click="toggleFullScreen">
+        工单信息
+        <Icon :type="modalClass === 'normal' ? 'arrow-expand' : 'arrow-shrink'" class="zoom" @click="toggleFullScreen"></Icon>
+      </div>
+      <WorkOrder v-if="currentData" ref="workorder" :cancelable="true" :readonly="disabled" :data="currentData" @save="handleSave" @cancel="handleCancel"></WorkOrder>
       <div slot="footer"></div>
     </Modal>
   </div>
@@ -39,18 +43,19 @@ import { toDateString } from '@/util'
 import config from '@/store/config'
 import ProjectSelect from '@/components/ProjectSelect'
 import mixin from '@/pages/list-mixin'
-import WorkOrder from './id'
+// import WorkOrder from './id'
 
 const { WORK_TYPES, WORK_STEPS } = config
 
 export default {
   mixins: [mixin],
-  components: { ProjectSelect, WorkOrder },
+  components: { ProjectSelect, WorkOrder: () => import('./id') },
   data () {
     return {
       WORK_STEPS,
       FETCH_ACTION: 'FETCH_WORKORDERS',
       DELETE_ACTION: 'DELETE_WORKORDER',
+      prefetchUserNames: true,
       query: this.getQuery(this.$route.query)
     }
   },
@@ -109,7 +114,7 @@ export default {
           title: '类型',
           key: 'type',
           sortable: true,
-          width: 80,
+          width: 100,
           render (h, { row }) {
             return WORK_TYPES[row.type]
           }
@@ -136,7 +141,7 @@ export default {
           render (h, { row }) {
             let id = row.dispatcher
             if (!id) return
-            let user = state.users.find(u => u._id === id)
+            let user = state.userNames[id]
             return user && user.name
           }
         },
@@ -147,7 +152,7 @@ export default {
           render (h, { row }) {
             let id = row.auditor
             if (!id) return
-            let user = state.users.find(u => u._id === id)
+            let user = state.userNames[id]
             return user && user.name
           }
         },
@@ -158,14 +163,8 @@ export default {
           render (h, { row }) {
             let ids = row.workers
             if (!ids) return
-            let names = []
-            let users = state.users
-            for (let u of users) {
-              if (ids.includes(u._id)) {
-                names.push(u.name)
-              }
-            }
-            return names.join(', ')
+            let userNames = state.userNames
+            return ids.map(i => userNames[i] && userNames[i].name).join(', ')
           }
         },
         {
@@ -196,7 +195,7 @@ export default {
           width: 64,
           render (h, { row }) {
             let id = row.createdBy
-            let user = state.users.find(u => u._id === id)
+            let user = state.userNames[id]
             return user && user.name
           }
         },
@@ -214,12 +213,11 @@ export default {
     addable () {
       let query = this.query
       return !query.step || !query.assignee
-    },
-    users () { return this.$store.state.users }
+    }
   },
   methods: {
     handleProjectQuery (value) {
-      this.query.projectId = value
+      this.query.project = value
       this.fetchArray()
     },
     handleStepQuery (value) {
@@ -233,7 +231,7 @@ export default {
     matchQuery () {
       let query = this.query
       let data = this.currentData
-      return (!query.projectId || data.projectId === query.projectId) &&
+      return (!query.project || data.project === query.project) &&
          (!Number.isInteger(query.step) || data.step === query.step) &&
          (!query.createdBy || data.createdBy === query.createdBy)
     },
@@ -262,13 +260,6 @@ export default {
     this.query = this.getQuery(to.query)
     this.fetchArray()
     next()
-  },
-  async beforeMount () {
-    let store = this.$store
-    if (store.state.users) return
-    this.loading = true
-    await store.dispatch('FETCH_USERS')
-    this.loading = false
   }
 }
 </script>

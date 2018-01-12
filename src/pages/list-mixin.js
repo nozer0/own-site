@@ -1,7 +1,9 @@
 export default {
   data () {
     return {
+      DEBUG: true,
       timer: null,
+      selectTimer: null,
       readonly: false,
       loading: false,
       isDialogVisible: false,
@@ -10,7 +12,8 @@ export default {
         offset: 0,
         size: 2
       },
-      fetchUsers: false,
+      prefetchUserNames: false,
+      modalClass: 'normal',
       total: 0,
       currentPage: 1,
       selectData: null,
@@ -24,19 +27,19 @@ export default {
     },
     addable () {
       if (this.loading || this.readonly) return false
-      let user = this.currentUser
-      return user && user.role < 1
+      return !!this.currentUser
     },
     editable () {
       if (this.loading || this.readonly) return false
       let user = this.currentUser
       let data = this.selectData
-      return user && data && data._id && (user.role < 1 || data.createdBy === user._id)
+      return user && data && data._id && (user.role < 0 || data.createdBy === user._id)
     },
     disabled () {
       let data = this.currentData
       return !data || !(data._id ? this.editable : this.addable)
-    }
+    },
+    userNames () { return this.$store.state.userNames }
   },
   watch: {
     currentUser (newValue, oldValue) {
@@ -57,6 +60,9 @@ export default {
       window.vv = this
       console.info(this)
     },
+    toggleFullScreen () {
+      this.modalClass = this.modalClass === 'normal' ? 'fullscreen' : 'normal'
+    },
     fetchArray () {
       clearTimeout(this.timer)
       if (!this.currentUser) return
@@ -66,12 +72,13 @@ export default {
       this.timer = setTimeout(async () => {
         try {
           let store = this.$store
-          if (this.fetchUsers && !store.state.users) {
-            await store.dispatch('FETCH_USERS')
+          let state = store.state
+          if (this.prefetchUserNames && !state.FETCH_ALL_USERNAMES) {
+            await store.dispatch('QUERY_USER_NAMES')
           }
           let id = this.query.id
           if (id) {
-            let d = store.state[this.STORE_NAME][id] || await store.dispatch(this.GET_ACTION, this.getQueryOptions ? this.getQueryOptions(id) : id)
+            let d = state[this.STORE_NAME][id] || await store.dispatch(this.GET_ACTION, this.getQueryOptions ? this.getQueryOptions(id) : id)
             this.dataArray = this.matchQuery(d) ? [d] : []
             this.total = this.dataArray.length
           } else {
@@ -89,7 +96,17 @@ export default {
       }, 500)
     },
     handleSelect (row) {
-      this.selectData = row
+      console.info('select')
+      if (this.selectData && this.selectData._id === row._id) {
+        clearTimeout(this.selectTimer)
+        this.selectTimer = setTimeout(() => {
+          console.info('unselect')
+          this.$refs.table.clearCurrentRow()
+          this.selectData = null
+        }, 300)
+      } else {
+        this.selectData = row
+      }
     },
     handleAdd () {
       this.isNew = true
@@ -97,8 +114,11 @@ export default {
       this.isDialogVisible = true
     },
     handleEdit () {
+      console.info('edit')
+      clearTimeout(this.selectTimer)
       this.isNew = false
       this.currentData = this.selectData
+      this.modalClass = 'normal'
       this.isDialogVisible = true
     },
     handleSave (data) {

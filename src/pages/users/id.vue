@@ -14,7 +14,7 @@
           :size="8 * 1024 * 1024" extensions="gif,jpg,jpeg,png,webp"
           accept="image/png,image/gif,image/jpeg,image/webp"
           name="avatar" :headers="headers" :post-action="avatarUrl"
-          :drop="!disabled && !cropping" :drop-directory="false"
+          :drop="!freezed && !cropping" :drop-directory="false"
           @input-filter="inputFilter" @input-file="inputFile">
           <Avatar class="avatar" :src="files.length ? files[0].url : avatarUrl" size="large">{{ currentData.name && currentData.name[0] }}</Avatar>
           <div><Tag>上传头像</Tag></div>
@@ -24,33 +24,33 @@
         <Row>
           <Col :xs="12">
             <FormItem label="账号" prop="username">
-              <Input v-model="currentData.username" size="small" :disabled="disabled"></Input>
+              <Input v-model="currentData.username" size="small" :disabled="freezed"></Input>
             </FormItem>
           </Col>
-          <Col :xs="12">
+          <Col v-if="currentUser && currentUser.role < 0" :xs="12">
             <FormItem label="密码" prop="password">
-              <Input type="password" size="small" :disabled="disabled"></Input>
+              <Input type="password" size="small" :disabled="freezed"></Input>
             </FormItem>
           </Col>
           <Col :xs="12">
             <FormItem label="姓名" prop="name">
-              <Input v-model="currentData.name" size="small" :disabled="disabled"></Input>
+              <Input v-model="currentData.name" size="small" :disabled="freezed"></Input>
             </FormItem>
           </Col>
           <Col :xs="12">
             <FormItem label="Email" prop="email">
-              <Input v-model="currentData.email" size="small" :disabled="disabled"></Input>
+              <Input v-model="currentData.email" size="small" :disabled="freezed"></Input>
             </FormItem>
           </Col>
           <Col :xs="12">
             <FormItem label="部门">
-              <GroupSelect ref="groupSelect" v-model="currentData.group" :cascade="false" :disabled="disabled"></GroupSelect>
-              <!-- <Input :value="group.name" size="small" disabled :disabled="disabled"></Input> -->
+              <GroupSelect ref="groupSelect" v-model="currentData.group" :cascade="false" :disabled="freezed"></GroupSelect>
+              <!-- <Input :value="group.name" size="small" disabled :disabled="freezed"></Input> -->
             </FormItem>
           </Col>
           <Col :xs="12">
             <FormItem label="管理职位" :label-width="76">
-              <i-switch v-model="currentData.isManager" :disabled="disabled">
+              <i-switch v-model="currentData.isManager" :disabled="freezed">
                 <span slot="open">是</span>
                 <span slot="close">否</span>
               </i-switch>
@@ -58,12 +58,12 @@
           </Col>
           <Col :xs="12">
             <FormItem label="职位">
-              <Input v-model="currentData.title" size="small" :disabled="disabled"></Input>
+              <Input v-model="currentData.title" size="small" :disabled="freezed"></Input>
             </FormItem>
           </Col>
           <Col :xs="12">
             <FormItem label="角色">
-              <Select v-model="currentData.role" filterable size="small" :disabled="disabled">
+              <Select v-model="currentData.role" filterable size="small" :disabled="freezed">
                 <Option v-for="(v, k) in ROLES" :key="k" :label="v" :value="k"></Option>
               </Select>
             </FormItem>
@@ -72,36 +72,36 @@
         <Row>
           <Col v-for="(mobile, i) in currentData.mobiles" :key="i" :xs="12">
             <FormItem :label="'手机' + (i + 1)">
-              <Input :value="mobile" @on-blur="setMobileValue(i, target.value)" size="small" :disabled="disabled">
-                <Button type="ghost" slot="append" icon="minus-circled" size="small" :disabled="disabled" @click="removeMobileField(i)"></Button>
+              <Input :value="mobile" @on-blur="setMobileValue(i, target.value)" size="small" :disabled="freezed">
+                <Button type="ghost" slot="append" icon="minus-circled" size="small" :disabled="freezed" @click="removeMobileField(i)"></Button>
               </Input>
             </FormItem>
           </Col>
           <Col :xs="2" :sm="2">
             <FormItem :label-width="5">
-              <Button icon="plus" size="small" :disabled="disabled" @click="addMobileField"></Button>
+              <Button icon="plus" size="small" :disabled="freezed" @click="addMobileField"></Button>
             </FormItem>
           </Col>
         </Row>
         <FormItem label="备注">
-          <Input v-model="currentData.note" type="textarea" :autosize="{minRows:2}" size="small" :disabled="disabled"></Input>
+          <Input v-model="currentData.note" type="textarea" :autosize="{minRows:2}" size="small" :disabled="freezed"></Input>
         </FormItem>
         <Row v-if="currentData.roles === 'sales'">
           <Col :xs="14" :sm="8">
             <FormItem label="实际/计划销售额" :label-width="134">
-              <Input v-model="currentData.amount" size="small" :disabled="disabled"><template slot="append">万元</template></Input>
+              <Input v-model="currentData.amount" size="small" :disabled="freezed"><template slot="append">万元</template></Input>
             </FormItem>
           </Col>
           <Col :xs="8" :sm="5">
             <FormItem label="/" :label-width="24">
-              <Input v-model="currentData.planAmount" size="small" :disabled="disabled"><template slot="append">万元</template></Input>
+              <Input v-model="currentData.planAmount" size="small" :disabled="freezed"><template slot="append">万元</template></Input>
             </FormItem>
           </Col>
         </Row>
         <Row v-if="currentData.type == 2">
           <Col :xs="16" :sm="8">
             <FormItem label="计划额">
-              <Input v-model="currentData.planAmount" size="small" :disabled="disabled"><template slot="append">万元</template></Input>
+              <Input v-model="currentData.planAmount" size="small" :disabled="freezed"><template slot="append">万元</template></Input>
             </FormItem>
           </Col>
         </Row>
@@ -140,6 +140,11 @@ export default {
     }
   },
   computed: {
+    disabled () {
+      let user = this.currentUser
+      let data = this.currentData
+      return !user || !data || (user.role >= 0 && data._id && user._id !== data.createdBy && user._id !== data._id)
+    },
     rules () {
       return {
         username: [
@@ -240,10 +245,7 @@ export default {
         mobiles: mobiles && mobiles.length ? [...mobiles] : ['']
       }
     },
-    async setData () {
-      if (!this.currentUser || !this.name || this.$route.name !== this.name) return
-      const id = this.$route.params.id
-      if (!id) return
+    async setData (id) {
       try {
         let store = this.$store
         if (!store.state.groups) store.dispatch('FETCH_GROUPS')
@@ -277,7 +279,9 @@ export default {
   },
   async beforeRouteUpdate (to, from, next) {
     await next()
-    await this.setData()
+    if (this.name && this.$route.name === this.name) {
+      this.setData(to.params.id)
+    }
   }
 }
 </script>

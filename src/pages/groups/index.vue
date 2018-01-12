@@ -125,7 +125,6 @@ export default {
     //   return tree
     // },
     handleSelect (data) {
-      console.info('handleSelect', this.currentData, data)
       this.currentData = data && (data.d || { parent: data.parent })
     },
     async handleRemove (data) {

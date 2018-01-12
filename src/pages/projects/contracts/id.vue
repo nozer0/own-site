@@ -65,10 +65,10 @@
         </FormItem>
         <Row>
           <Col :xs="12">
-            <FormItem label="创建">{{ createdBy }}（{{ currentData.createdAt | toDateString }}）</FormItem>
+            <FormItem label="创建">{{ createdBy }} ({{ currentData.createdAt | toDateString }})</FormItem>
           </Col>
           <Col :xs="12">
-            <FormItem label="修改">{{ updatedBy }}（{{ currentData.updatedAt | toDateString }}）</FormItem>
+            <FormItem label="修改">{{ updatedBy }} ({{ currentData.updatedAt | toDateString }})</FormItem>
           </Col>
         </Row>
         <!-- <config-form :configs="configs"></config-form> -->

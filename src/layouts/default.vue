@@ -17,26 +17,21 @@
       </div>
     </header>
     <main>
-      <VBar wrapper="wrapper">
-        <Sider id="sidebar" v-bar="{preventParentScroll: true}"></Sider>
-      </VBar>
-      <VBar id="content" wrapper="wrapper2">
-        <!-- <article> -->
+      <Sider id="sidebar"></Sider>
+      <article id="content">
         <slot></slot>
-        <!-- </article> -->
-      </VBar>
+      </article>
     </main>
     <Login ref="login"></Login>
   </div>
 </template>
 
 <script>
-import VBar from 'v-bar'
 import Sider from './nav'
 import Login from '@/components/Login'
 
 export default {
-  components: { VBar, Sider, Login },
+  components: { Sider, Login },
   data () {
     return {
       hideSide: true
@@ -111,43 +106,30 @@ header img {
 
 main {
   position: absolute;
-  /*overflow: scroll;*/
+  overflow-x: hidden;
   top: 50px;
   bottom: 0;
   width: 100%;
 }
 
-#content2 {
+#content {
   margin-left: 180px;
   transition: margin-left ease-in-out .2s;
 }
 
-.wrapper {
-  position: absolute;
-  /*bottom: 0;*/
-  height: 100%;
-  /*background: #485c6a;*/
-  width: 180px;
-  /*transition: width ease-in-out .2s;*/
-  /*overflow-x: hidden;*/
-  /*z-index: 999;*/
-}
-.wrapper2 {
-  position: absolute;
-  left: 180px;
-  right: 0;
-  height: 100%;
-  transition: left ease-in-out .2s;
-}
 #sidebar {
-  /*top: 50px;*/
-  /*bottom: 0;*/
-  /*position: fixed;*/
+  top: 50px;
+  bottom: 0;
+  position: fixed;
   background: #485c6a;
   width: 180px;
   transition: width ease-in-out .2s;
-  /*overflow-x: hidden;*/
-  /*z-index: 999;*/
+  overflow: hidden;
+  z-index: 999;
+}
+
+#sidebar:hover {
+  overflow-y: auto;
 }
 
 .ivu-menu-vertical .ivu-menu-submenu .ivu-menu-item {
@@ -161,8 +143,8 @@ main {
 }
 
 @media screen and (max-width: 768px) {
-  .wrapper, #sidebar, #sidebar ul { width: 56px !important; }
-  .wrapper:hover, #sidebar:hover, #sidebar:hover ul { width: 180px !important; }
+  #sidebar, #sidebar ul { width: 56px !important; }
+  #sidebar:hover, #sidebar:hover ul { width: 180px !important; }
   #sidebar .menu_title, #sidebar .ivu-menu-submenu-title-icon {
     display: none;
   }

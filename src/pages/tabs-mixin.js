@@ -21,9 +21,9 @@ export default {
           })
         ])
       },
-      isCustomerVisible: false,
-      customer: null,
-      customerLabel (h) {
+      isCompanyVisible: false,
+      company: null,
+      companyLabel (h) {
         return h('div', [
           h('span', '客户'),
           h('Icon', {
@@ -34,7 +34,7 @@ export default {
               click (e) {
                 e.stopPropagation()
                 e.target.parentNode.parentNode.style.display = 'none'
-                if (self.currentTab === 'customer') self.currentTab = self.name
+                if (self.currentTab === 'company') self.currentTab = self.name
               }
             }
           })
@@ -43,63 +43,68 @@ export default {
       contact: null
     }
   },
-  watch: {
+  watch2: {
     async project (newValue, oldValue) {
       if (newValue === oldValue) return
       this.currentValue = newValue
       if (newValue) {
-        if (!this.customer || this.customer._id !== newValue.customerId) {
+        if (!this.company || this.company._id !== newValue.company) {
           this.loading = true
           this.$Loading.start()
-          this.currentData.customerId = newValue.customerId
-          let customer = await this.$store.dispatch('GET_COMPANY', newValue.customerId)
-          if (customer) {
-            this.customer = customer
-            this.currentData.customerName = customer.name
+          this.currentData.company = newValue.company
+          let company = await this.$store.dispatch('GET_COMPANY', newValue.company)
+          if (company) {
+            this.company = company
+            this.currentData.companyName = company.name
           }
           this.loading = false
           this.$Loading.finish()
         }
-      } else if (this.customer) {
-        this.customer = null
-        this.currentData.customerId = null
-        this.currentData.customerName = null
+      } else if (this.company) {
+        this.company = null
+        this.currentData.company = null
+        this.currentData.companyName = null
       }
     }
   },
   methods: {
-    async handleProjectChange (val, name) {
-      console.info('handleProjectChange', val, name)
-      this.currentData.projectId = val
+    handleProjectChange (val, name) {
+      this.currentData.project = val
       this.currentData.projectName = name
       // this.$set(this.currentData, 'projectName', name)
-      if (!this.project || this.project._id !== val) {
+    },
+    async showProject () {
+      let pid = this.currentData.project
+      if (!pid) return
+      if (!this.project || this.project._id !== pid) {
         this.loading = true
         this.$Loading.start()
-        this.project = await this.$store.dispatch('GET_PROJECT', val)
+        try {
+          this.project = await this.$store.dispatch('GET_PROJECT', pid)
+          let tabs = this.$refs.tabs
+          tabs.$refs.nav.children[2].style.display = 'inline-block'
+          this.isProjectVisible = true
+          this.currentTab = 'project'
+        } catch (err) {
+          this.$emit('error', err)
+          let res = err.response
+          this.$Message.error(res && res.data && res.data.error || err.message || err.toString())
+        }
         this.loading = false
         this.$Loading.finish()
       }
     },
-    showProject () {
-      let pid = this.currentData.projectId
-      if (!pid) return
-      let tabs = this.$refs.tabs
-      tabs.$refs.nav.children[2].style.display = 'inline-block'
-      this.isProjectVisible = true
-      this.currentTab = 'project'
-    },
     showCustomer () {
-      let customer = this.customer
-      if (!customer) return
+      let company = this.company
+      if (!company) return
       let tabs = this.$refs.tabs
       tabs.$refs.nav.children[3].style.display = 'inline-block'
       this.isProjectVisible = true
-      this.isCustomerVisible = true
-      this.currentTab = 'customer'
+      this.isCompanyVisible = true
+      this.currentTab = 'company'
     },
     async handleContactChange (val, name) {
-      this.currentData.contactId = val
+      this.currentData.contact = val
       this.currentData.contactName = name
       if (!this.contact || this.contact._id !== val) {
         this.loading = true

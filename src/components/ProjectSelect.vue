@@ -1,5 +1,5 @@
 <template>
-  <Select ref="select" v-if="grouped" :value="currentValue" placeholder="请输入编码或名称" clearable size="small" filterable remote label-in-value :disabled="disabled" :loading="loading" :remote-method="handleRemoteFilter" @on-change="handleNameChange">
+  <Select ref="select" v-if="grouped" :value="currentValue" size="small" transfer placeholder="请输入编码或名称" clearable filterable remote label-in-value :disabled="disabled" :loading="loading" :remote-method="handleRemoteFilter" @on-change="handleNameChange">
     <OptionGroup v-for="item in regions" :label="item.region" :key="item.region">
       <Option v-for="option in item.data" :value="option._id" :key="option._id" :label="option.name + ' [' + option.code + ']'"></Option>
     </OptionGroup>
@@ -15,7 +15,7 @@ import mixin from './SelectMixin'
 export default {
   name: 'ProjectSelect',
   mixins: [mixin],
-  props: ['grouped', 'companyId'],
+  props: ['grouped', 'company'],
   data () {
     return {
       QUERY_ACTION: 'QUERY_PROJECT_NAMES',
@@ -26,10 +26,10 @@ export default {
   },
   methods: {
     getQueryOptions (val) {
-      let companyId = this.companyId
-      if (!companyId && !this.grouped) return val
+      let company = this.company
+      if (!company && !this.grouped) return val
       let opt = val ? { keyword: val } : {}
-      if (companyId) opt.companyId = companyId
+      if (company) opt.company = company
       if (this.grouped) opt.withRegion = 1
       return opt
     },

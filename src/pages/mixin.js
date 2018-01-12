@@ -11,21 +11,59 @@ export default {
     }
   },
   data () {
+    let d = this.data
     return {
       readonly: false,
       loading: false,
-      createdBy: null,
-      updatedBy: null,
-      fetchUsers: false,
-      currentData: this.cloneData(this.data)
+      prefetchUserNames: false,
+      createdBy: d && this.getUsername(d.createdBy),
+      updatedBy: d && this.getUsername(d.updatedBy),
+      currentData: this.cloneData(d)
     }
   },
   computed: {
     disabled () {
-      if (this.readonly || this.loading) return true
       let user = this.currentUser
-      return !user || (user.role > 0 && this.currentData._id && user._id !== this.currentData.createdBy)
+      let data = this.currentData
+      return !user || !data || (user.role >= 0 && data._id && user._id !== data.createdBy)
     },
+    freezed () {
+      return this.readonly || this.loading || this.disabled
+    },
+    // createdBy () {
+    //   let data = this.data
+    //   let user = this.currentUser
+    //   if (!data || !currentUser) return ''
+    //   if (!data._id) {
+    //     return user && user.name
+    //   }
+    //   let createdBy = data.createdBy
+    //   if (!createdBy) return ''
+    //   let username
+    //   try {
+    //     this.$store.dispatch('GET_USERNAME', createdBy).then(u => {
+    //       username = u
+    //     })
+    //   } catch (err) {}
+    //   return username
+    // },
+    // updatedBy () {
+    //   let data = this.data
+    //   let user = this.currentUser
+    //   if (!data || !currentUser) return ''
+    //   if (!data._id) {
+    //     return user && user.name
+    //   }
+    //   let updatedBy = data.updatedBy
+    //   if (!updatedBy) return ''
+    //   let username
+    //   try {
+    //     this.$store.dispatch('GET_USERNAME', updatedBy).then(u => {
+    //       username = u
+    //     })
+    //   } catch (err) {}
+    //   return username
+    // },
     currentUser () {
       return this.$store.state.currentUser
     }
@@ -35,8 +73,12 @@ export default {
       if (newValue === oldValue) return
       this.$refs.form.resetFields()
       let d = this.currentData = this.cloneData(newValue)
-      this.createdBy = await this.getUsername(d.createdBy)
-      this.updatedBy = await this.getUsername(d.updatedBy)
+      console.info('watch', this.$store.state.userNames)
+      this.createdBy = await this.getUsernameAsync(d.createdBy)
+      this.updatedBy = await this.getUsernameAsync(d.updatedBy)
+      if (this.afterInitData) {
+        await this.afterInitData()
+      }
     }
   },
   methods: {
@@ -44,7 +86,7 @@ export default {
       window.vv = this
       console.info(this)
     },
-    async getUsername (userId) {
+    getUsername (userId) {
       if (!this.data) return
       let user = this.currentUser
       if (!user) return
@@ -52,8 +94,22 @@ export default {
         return user && user.name
       }
       if (!userId) return
+      user = this.$store.state.userNames[userId]
+      return user && user.name
+    },
+    getUsernameAsync (userId) {
+      if (!this.data) return
+      let user = this.currentUser
+      if (!user) return
+      if (!this.data._id) {
+        return user && user.name
+      }
+      if (!userId) return
+      let store = this.$store
+      user = store.state.userNames[userId]
+      if (user || store.state.FETCH_ALL_USERNAMES) return user && user.name
       try {
-        return await this.$store.dispatch('GET_USERNAME', userId)
+        return store.dispatch('GET_USERNAME', userId)
       } catch (err) {
         this.$emit('error', err)
         let res = err.response
@@ -93,19 +149,17 @@ export default {
       this.loading = true
       this.$Loading.start()
       try {
-        console.info('posting', data)
         let ret = await this.$store.dispatch(this.POST_ACTION, data)
         if (!ret) throw new Error('表单提交失败')
         if (this.data) Object.assign(this.data, this.cloneData(ret))
         this.currentData = this.cloneData(ret)
         this.$emit('save', this.data)
-        this.loading = false
         close()
         this.$Message.success('表单提交成功!')
       } catch (err) {
         this.$emit('error', err)
         close()
-        console.info(err, err.response, err.message, err.toString())
+        // console.info(err, err.response, err.message, err.toString())
         let res = err.response
         this.$Message.error(res && res.data && res.data.error || err.message || err.toString())
       }
@@ -132,13 +186,22 @@ export default {
   },
   async created () {
     if (!this.currentUser) return
-    if (this.fetchUsers && !this.$store.state.users) {
-      await this.$store.dispatch('FETCH_USERS')
+    let store = this.$store
+    let state = store.state
+    if (this.prefetchUserNames && !state.FETCH_ALL_USERNAMES) {
+      await store.dispatch('QUERY_USER_NAMES')
     }
-    if (this.name && this.$route.name !== this.name) {
-      return
+    let d = this.data
+    if (d) {
+      this.createdBy = await this.getUsernameAsync(d.createdBy)
+      this.updatedBy = await this.getUsernameAsync(d.updatedBy)
     }
-    const id = this.$route.params.id
-    if (id) this.setData(id)
+    if (this.name && this.$route.name === this.name) {
+      const id = this.$route.params.id
+      if (id) await this.setData(id)
+    }
+    if (this.afterInitData) {
+      await this.afterInitData()
+    }
   }
 }

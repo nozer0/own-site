@@ -1,8 +1,8 @@
 import axios from 'axios'
 // import PROJECTS from './projects.json'
-import INVENTORIES from './inventories.json'
+// import INVENTORIES from './inventories.json'
 import VISITS from './visits.json'
-import WORKORDERS from './workorders.json'
+// import WORKORDERS from './workorders.json'
 // import PRODUCTS from './products.json'
 // import COMPANIES from './companies.json'
 // import CONTACTS from './contacts.json'
@@ -194,7 +194,9 @@ var gettings = {
   companies: {},
   contacts: {},
   products: {},
-  projects: {}
+  projects: {},
+  workorders: {},
+  inventories: {}
 }
 
 var apis = {
@@ -234,10 +236,10 @@ var apis = {
   },
 
   /* ************** user ***************/
-  async fetchUsers () {
+  async fetchUsers (query) {
     let p = fetchings.users
     if (!p) {
-      p = fetchings.users = axios.get('/users')
+      p = fetchings.users = axios.get('/users', { params: query })
     }
     try {
       let res = await p
@@ -257,6 +259,22 @@ var apis = {
     } finally {
       gettings.users[id] = null
     }
+  },
+  async fetchUserNames (option) {
+    if (typeof option === 'string') {
+      let p = fetchings.productNames[option]
+      if (!p) {
+        p = fetchings.productNames[option] = axios.get('/users/names/' + option)
+      }
+      try {
+        let res = await p
+        return res && res.data
+      } finally {
+        fetchings.productNames[option] = null
+      }
+    }
+    let res = await axios.get('/users/names', { params: option })
+    return res && res.data
   },
   async getUsername (id) {
     let p = gettings.users[id]
@@ -303,17 +321,21 @@ var apis = {
   },
 
   /* ************** product ***************/
-  async fetchProductNames (keyword) {
-    let p = fetchings.productNames[keyword]
-    if (!p) {
-      p = fetchings.productNames[keyword] = axios.get('/products/names?keyword=' + keyword)
+  async fetchProductNames (option) {
+    if (typeof option === 'string') {
+      let p = fetchings.productNames[option]
+      if (!p) {
+        p = fetchings.productNames[option] = axios.get('/products/names' + (option ? '?keyword=' + option : ''))
+      }
+      try {
+        let res = await p
+        return res && res.data
+      } finally {
+        fetchings.productNames[option] = null
+      }
     }
-    try {
-      let res = await p
-      return res && res.data
-    } finally {
-      fetchings.productNames[keyword] = null
-    }
+    let res = await axios.get('/products/names', { params: option })
+    return res && res.data
   },
   async fetchProducts (query) {
     let res = await axios.get('/products', { params: query })
@@ -366,7 +388,7 @@ var apis = {
         fetchings.companyNames[option] = null
       }
     }
-    let res = await axios.get('/companies/names?keyword=' + option.keyword + '&type=' + option.type)
+    let res = await axios.get('/companies/names', { params: option })
     return res && res.data
   },
   async fetchCompanies (query) {
@@ -498,42 +520,29 @@ var apis = {
   },
 
   /* ************** inventory ***************/
-  fetchInventories ({ category, vendor, name, offset, size = 25 }) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        if (category || vendor || name) {
-          name = name && name.toLowerCase()
-          let data = INVENTORIES.filter(v => {
-            return (!category || v.category === category) && (!vendor || v.vendor === vendor) && (!name || v.name.toLowerCase().indexOf(name) !== -1 || v.model.toLowerCase().indexOf(name) !== -1)
-          })
-          resolve({ data: data, total: 100 })
-        } else {
-          resolve({ data: INVENTORIES, total: INVENTORIES.length })
-        }
-      }, 300)
-    })
+  async fetchInventories (query) {
+    let res = await axios.get('/inventories', { params: query })
+    return res && res.data
   },
-  getInventory (id) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(INVENTORIES.find(p => p.id === id))
-      }, 300)
-    })
+  async getInventory (id) {
+    let p = gettings.inventories[id]
+    if (!p) {
+      p = gettings.inventories[id] = axios.get('/inventories/' + id)
+    }
+    try {
+      let res = await p
+      return res && res.data
+    } finally {
+      gettings.inventories[id] = null
+    }
   },
-  postInventory (data) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        if (!data.id) data.id = ++maxId
-        resolve(data)
-      }, 300)
-    })
+  async postInventory (data) {
+    let res = await (data._id ? axios.put('/inventories/' + data._id, data) : axios.post('/inventories', data))
+    return res && res.data
   },
-  deleteInventory (id) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(id)
-      }, 300)
-    })
+  async deleteInventory (id) {
+    let res = await axios.delete('/inventories/' + id)
+    return res && res.data
   },
 
   /* ************** visit ***************/
@@ -575,49 +584,36 @@ var apis = {
   },
 
   /* ************** workorder ***************/
-  fetchWorkorders ({ step, projectId, assignee, createdBy, offset, size = 25 }) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        let stepFilter = Number.isInteger(step)
-        if (assignee || projectId || stepFilter || createdBy) {
-          let data = WORKORDERS.filter(v => {
-            return (!projectId || v.projectId === projectId) && (!stepFilter || v.step === step) && (!createdBy || v.createdBy === createdBy) && (!assignee || (Array.isArray(v.assignee) ? v.assignee.includes(assignee) : v.assignee === assignee))
-          })
-          resolve({ data: data, total: 100 })
-        } else {
-          resolve({ data: WORKORDERS, total: WORKORDERS.length })
-        }
-      }, 300)
-    })
+  async fetchWorkorders (query) {
+    let res = await axios.get('/workorders', { params: query })
+    return res && res.data
   },
-  getWorkorder (id) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(WORKORDERS.find(p => p.id === id))
-      }, 300)
-    })
+  async getWorkorder (id) {
+    let p = gettings.workorders[id]
+    if (!p) {
+      p = gettings.workorders[id] = axios.get('/workorders/' + id)
+    }
+    try {
+      let res = await p
+      return res && res.data
+    } finally {
+      gettings.workorders[id] = null
+    }
   },
-  postWorkorder (data) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        if (!data.id) data.id = ++maxId
-        resolve(data)
-      }, 300)
-    })
+  async postWorkorder (data) {
+    let res = await (data._id ? axios.put('/workorders/' + data._id, data) : axios.post('/workorders', data))
+    return res && res.data
   },
-  deleteWorkorder (id) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(id)
-      }, 300)
-    })
+  async deleteWorkorder (id) {
+    let res = await axios.delete('/workorders/' + id)
+    return res && res.data
   }
 }
 
 axios.defaults.withCredentials = true
 
 export default function (baseURL = '', token = null) {
-  axios.defaults.baseURL = baseURL || 'http://localhost:3000/v1'
+  axios.defaults.baseURL = baseURL || 'http://192.168.100.220:3000/v1'
   if (token) axios.defaults.headers.common['Authorization'] = token
   return apis
 }

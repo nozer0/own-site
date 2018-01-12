@@ -2,10 +2,10 @@
   <div>
     <Form inline :label-width="50">
       <FormItem label="公司">
-        <CompanySelect ref="companySelect" style="width: 200px" :disabled="loading || !currentUser" @on-change="handleCompanyQuery"></CompanySelect>
+        <CompanySelect ref="companySelect" style="width: 320px" :disabled="loading || !currentUser" @on-change="handleCompanyQuery"></CompanySelect>
       </FormItem>
       <FormItem label="姓名">
-        <ContactSelect ref="contactSelect" style="width: 200px" :disabled="loading || !currentUser" @on-change="handleContactQuery"></ContactSelect>
+        <ContactSelect ref="contactSelect" style="width: 200px" :disabled="loading || !currentUser" :company="query.company" @on-change="handleContactQuery"></ContactSelect>
       </FormItem>
       <FormItem class="buttons">
         <Button type="ghost" size="small" icon="plus" :disabled="!addable" @click.stop.prevent="handleAdd">新增</Button>
@@ -26,15 +26,19 @@
         <Button @click="test"></Button>
       </FormItem>
     </Form>
-    <Table ref="table" :data="dataArray" :columns="columns" :loading="loading" size="small" highlight-row border stripe @on-current-change="handleSelect" @on-row-dblclick="handleEdit"></Table>
+    <Table ref="table" :data="dataArray" :columns="columns" :loading="loading" size="small" highlight-row border stripe @on-row-click="handleSelect" @on-row-dblclick="handleEdit"></Table>
     <div style="margin: 10px; overflow: hidden">
       <div style="text-align: right">
         <Page size="small" :page-size="query.size" :total="total" :current.sync="currentPage"></Page>
       </div>
     </div>
 
-    <Modal title="联系人信息" v-model="isDialogVisible" width="720" transfer>
-      <Contact ref="contact" :cancelable="true" :readonly="readonly" :data="currentData" @save="handleSave" @cancel="handleCancel"></Contact>
+    <Modal ref="modal" v-model="isDialogVisible" transfer :mask-closable="false" width="80%" :class-name="modalClass">
+      <div slot="header" style="margin-right: 20px" @click="toggleFullScreen">
+        联系人信息
+        <Icon :type="modalClass === 'normal' ? 'arrow-expand' : 'arrow-shrink'" class="zoom" @click="toggleFullScreen"></Icon>
+      </div>
+      <Contact v-if="currentData" ref="contact" :cancelable="true" :readonly="disabled" :data="currentData" @save="handleSave" @cancel="handleCancel"></Contact>
       <div slot="footer"></div>
     </Modal>
 
@@ -73,7 +77,7 @@ export default {
       GET_ACTION: 'GET_CONTACT',
       DELETE_ACTION: 'DELETE_CONTACT',
       STORE_NAME: 'contacts',
-      fetchUsers: true,
+      prefetchUsernames: true,
       query: {
         withCompanyName: 1,
         id: null,
@@ -145,8 +149,7 @@ export default {
           key: 'createdBy',
           width: 80,
           render (h, { row }) {
-            let id = row.createdBy
-            let user = state.users && state.users.find(u => u._id === id)
+            let user = state.userNames[row.createdBy]
             return user && user.name
           }
         },
@@ -181,6 +184,7 @@ export default {
     handleCompanyQuery (value) {
       this.query.offset = 0
       this.query.company = value
+      this.$refs.contactSelect.init = false
       this.fetchArray()
     },
     handleContactQuery (value) {

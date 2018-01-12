@@ -27,10 +27,20 @@ export default {
   box-sizing: border-box;
 }
 */
+html {
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
 
 body {
   margin: 0;
   background: #324157;
+  scrollbar-face-color: #99ccff;
+  scrollbar-shadow-color: #ccccff;
+  scrollbar-highlight-color: #ccccff;
+  scrollbar-3dlight-color: #99ccff;
+  scrollbar-darkshadow-color: #ccccff;
+  scrollbar-track-color: #ccccff;
+  scrollbar-arrow-color: #000033;
 }
 
 #app {
@@ -142,19 +152,47 @@ form:after {
   cursor: not-allowed;
 }
 
-::-webkit-scrollbar2 {
-  width: 10px;
+::-webkit-scrollbar {
+  width: 8px;
   height: 1px;
 }
-::-webkit-scrollbar-thumb2 {
-  border-radius: 10px;
-   -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-  background: #535353;
+
+:window-inactive {
+  overflow-y: hidden;
+  visibility: hidden;
 }
-::-webkit-scrollbar-track2 {
+
+::-webkit-scrollbar-thumb {
+  border-radius: 8px;
   -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-  border-radius: 10px;
-  background: #EDEDED;
+  background: #1f2d3d;
+}
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+  border-radius: 8px;
+  background: #5f6d7d;
+}
+
+.ivu-modal-header .zoom {
+  float: right;
+  color: #999;
+  font-size: 18px;
+}
+.ivu-modal-header .zoom:hover {
+  cursor: pointer;
+  color: #ccc;
+}
+.normal .ivu-modal {
+  width: 80%;
+}
+.fullscreen .ivu-modal {
+  width: 100% !important;
+  height: 100%;
+  top: 0;
+  margin: 0;
+}
+.fullscreen .ivu-modal-content {
+  height: 100%;
 }
 </style>
 

@@ -1,15 +1,15 @@
 <template>
   <Form ref="form" :model="currentData" :rules="rules" :label-width="64">
     <FormItem label="名称" prop="name">
-      <Input v-model="currentData.name" size="small" :disabled="disabled"></Input>
+      <Input v-model="currentData.name" size="small" :disabled="freezed"></Input>
     </FormItem>
     <FormItem label="主管">
-      <Select v-model="leaders" multiple filterable size="small" :disabled="disabled" placeholder="可多选">
+      <Select v-model="leaders" multiple filterable size="small" :disabled="freezed" placeholder="可多选">
         <Option v-for="item in users" :label="item.name" :value="item._id" :key="item._id" :disabled="members.includes(item._id)">{{ item.name }} ( {{ item.username }} )</Option>
       </Select>
     </FormItem>
     <FormItem label="成员">
-      <Select v-model="members" multiple filterable size="small" :disabled="disabled" placeholder="可多选">
+      <Select v-model="members" multiple filterable size="small" :disabled="freezed" placeholder="可多选">
         <Option v-for="item in users" :label="item.name" :value="item._id" :key="item._id" :disabled="leaders.includes(item._id)">{{ item.name }} ( {{ item.username }} )</Option>
       </Select>
     </FormItem>
@@ -21,32 +21,32 @@
     <Row>
       <Col :xs="12" :sm="8">
         <FormItem label="Email" prop="email">
-          <Input v-model="currentData.email" size="small" :disabled="disabled"></Input>
+          <Input v-model="currentData.email" size="small" :disabled="freezed"></Input>
         </FormItem>
       </Col>
       <Col :xs="12" :sm="8">
         <FormItem label="电话" prop="phone">
-          <Input v-model="currentData.phone" size="small" :disabled="disabled"></Input>
+          <Input v-model="currentData.phone" size="small" :disabled="freezed"></Input>
         </FormItem>
       </Col>
       <Col :xs="12" :sm="8">
         <FormItem label="传真">
-          <Input v-model="currentData.fax" size="small" :disabled="disabled"></Input>
+          <Input v-model="currentData.fax" size="small" :disabled="freezed"></Input>
         </FormItem>
       </Col>
     </Row>
     <FormItem label="描述">
-      <Input type="textarea" :autosize="{minRows:2, maxRows:6}" v-model="currentData.description" size="small" :disabled="disabled"></Input>
+      <Input type="textarea" :autosize="{minRows:2, maxRows:6}" v-model="currentData.description" size="small" :disabled="freezed"></Input>
     </FormItem>
     <Row>
       <Col :xs="24" :sm="12">
-        <FormItem label="创建">{{ createdBy }}（{{ currentData.createdAt | toDateString }}）</FormItem>
+        <FormItem label="创建">{{ createdBy }} ({{ currentData.createdAt | toDateString }})</FormItem>
       </Col>
       <Col :xs="24" :sm="12">
-        <FormItem label="修改">{{ updatedBy }}（{{ currentData.updatedAt | toDateString }}）</FormItem>
+        <FormItem label="修改">{{ updatedBy }} ({{ currentData.updatedAt | toDateString }})</FormItem>
       </Col>
     </Row>
-    <FormItem v-show="!disabled" :label-width="1" style="float:right">
+    <FormItem v-show="!disabled" :label-width="1" class="form-buttons">
       <Button type="primary" icon="android-done" size="small" :loading="loading" @click.stop.prevent="handleSave">确定</Button>
       <Button type="ghost" icon="refresh" size="small" @click.stop.prevent="handleReset">重置</Button>
       <Button v-if="cancelable && !currentData._id" type="ghost" icon="close" size="small" @click.stop.prevent="handleCancel">取消</Button>
@@ -72,10 +72,9 @@ export default {
   },
   computed: {
     disabled () {
-      if (this.readonly) return true
       let user = this.currentUser
       let data = this.currentData
-      return !user || (user.role > 0 && data._id && !user.isManager && user.group !== data._id)
+      return !user || (user.role >= 0 && data._id && (!user.isManager || user.group !== data._id && user.group !== data.parent))
     },
     rules () {
       return {
@@ -88,19 +87,6 @@ export default {
       }
     },
     ...mapState(['users'])
-  },
-  watch: {
-    currentUser (newValue, oldValue) {
-      if (!oldValue && newValue) {
-        this.fetchUsers().then(this.setMembers)
-      }
-    },
-    data (newValue, oldValue) {
-      if (newValue === oldValue) return
-      this.$refs.form.resetFields()
-      this.currentData = this.cloneData(newValue)
-      if (this.users) this.setMembers()
-    }
   },
   methods: {
     setMembers () {
@@ -131,11 +117,11 @@ export default {
       this.loading = false
       this.$Loading.finish()
     },
-    async setData () {
-      let store = this.$store
-      if (!store.state.users) {
-        await this.fetchUsers()
-      }
+    // async setData () {
+    //   let store = this.$store
+    //   if (!store.state.users) {
+    //     await this.fetchUsers()
+    //   }
       // const id = this.$route.params.id
       // if (id) {
       //   let groups = store.state.groups
@@ -162,8 +148,8 @@ export default {
       //     return
       //   }
       // }
-      this.setMembers()
-    },
+    //   this.setMembers()
+    // },
     async handleSave () {
       if (this.disabled) return
       let valid = await this.$refs.form.validate()
@@ -229,6 +215,10 @@ export default {
       } else {
         this.$Message.warning('表单验证失败!')
       }
+    },
+    async afterInitData () {
+      if (!this.users) await this.fetchUsers()
+      this.setMembers()
     }
   }
 }

@@ -2,7 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import iView from 'iview'
-import Vuebar from 'vuebar'
+// import Vuebar from 'vuebar'
 // import 'element-ui/lib/theme-default/index.css'
 // import '../theme/index.css'
 // import 'iview/dist/styles/iview.css'
@@ -16,7 +16,7 @@ import localStorage from './util/localStorage'
 Vue.config.productionTip = false
 
 Vue.use(iView)
-Vue.use(Vuebar)
+// Vue.use(Vuebar)
 Vue.component('ProductSelect', ProductSelect)
 
 const store = createStore()

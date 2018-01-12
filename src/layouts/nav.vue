@@ -1,18 +1,20 @@
 <template>
   <nav class="headnav">
-    <Menu ref="menu" theme="dark" width="180px" :open-names="openNames" :active-name="activeName" @on-select="handleSelect">
+    <Menu ref="menu" theme="dark" width="180px" accordion :open-names="openNames" :active-name="activeName" @on-select="handleSelect">
       <MenuItem name="/"><i class="ivu-icon ivu-icon-ios-home" style="font-size: 24px"></i><span class="menu_title">首页</span></MenuItem>
       <Submenu name="/projects">
         <template slot="title"><Icon type="ios-box"></Icon><span class="menu_title">项目系统</span></template>
         <MenuItem name="/projects"><Icon type="ios-albums"></Icon><span class="menu_title">项目列表</span></MenuItem>
-        <MenuItem name="/projects?mine"><Icon type="ios-photos"></Icon><span class="menu_title">我的项目</span></MenuItem>
-        <MenuItem name="/projects?finish"><Icon type="android-checkbox"></Icon><span class="menu_title">完结项目</span></MenuItem>
+        <MenuItem name="/projects?step=1"><Icon type="ios-help"></Icon><span class="menu_title">待审核项目</span></MenuItem>
+        <MenuItem name="/projects?status=success"><Icon type="ios-checkmark"></Icon><span class="menu_title">通过项目</span></MenuItem>
+        <MenuItem name="/projects?status=failed"><Icon type="ios-close"></Icon><span class="menu_title">未通过项目</span></MenuItem>
+        <MenuItem name="/projects?step=2"><Icon type="android-checkbox"></Icon><span class="menu_title">完结项目</span></MenuItem>
         <MenuItem name="/inventories"><Icon type="clipboard"></Icon><span class="menu_title">清单列表</span></MenuItem>
-        <MenuItem name="/inventories"><Icon type="android-list"></Icon><span class="menu_title">我的清单</span></MenuItem>
-        <MenuItem name="/contracts"><Icon type="ios-paper"></Icon><span class="menu_title">合同列表</span></MenuItem>
-        <MenuItem name="/contracts?mine"><Icon type="ios-list"></Icon><span class="menu_title">我的合同</span></MenuItem>
-        <MenuItem name="/visits"><Icon type="wineglass"></Icon><span class="menu_title">客勤记录</span></MenuItem>
-        <MenuItem name="/visits?mine"><Icon type="coffee"></Icon><span class="menu_title">我的客勤记录</span></MenuItem>
+        <!-- <MenuItem name="/inventories"><Icon type="android-list"></Icon><span class="menu_title">我的清单</span></MenuItem> -->
+        <!-- <MenuItem name="/contracts"><Icon type="ios-paper"></Icon><span class="menu_title">合同列表</span></MenuItem> -->
+        <!-- <MenuItem name="/contracts?mine"><Icon type="ios-list"></Icon><span class="menu_title">我的合同</span></MenuItem> -->
+        <!-- <MenuItem name="/visits"><Icon type="wineglass"></Icon><span class="menu_title">客勤记录</span></MenuItem> -->
+        <!-- <MenuItem name="/visits?mine"><Icon type="coffee"></Icon><span class="menu_title">我的客勤记录</span></MenuItem> -->
       </Submenu>
       <Submenu name="/purchases">
         <template slot="title"><Icon type="ios-cart"></Icon><span class="menu_title">采购系统</span></template>
@@ -55,9 +57,9 @@
         <MenuItem name="/companies"><Icon type="ios-people"></Icon></Icon><span class="menu_title">公司列表</span></MenuItem>
         <MenuItem name="/companies?type=0"><Icon type="chatbubbles"></Icon></Icon><span class="menu_title">客户列表</span></MenuItem>
         <MenuItem name="/companies?type=1"><Icon type="ios-chatboxes"></Icon></Icon><span class="menu_title">运营商列表</span></MenuItem>
-        <MenuItem name="/companies?type=2"><Icon type="chatboxes"></Icon></Icon><span class="menu_title">厂商列表</span></MenuItem>
-        <MenuItem name="/companies?type=3"><Icon type="android-chat"></Icon></Icon><span class="menu_title">供货商列表</span></MenuItem>
-        <MenuItem name="/companies?type=4"><Icon type="chatboxes"></Icon></Icon><span class="menu_title">集成商列表</span></MenuItem>
+        <MenuItem name="/companies?type=2"><Icon type="chatboxes"></Icon></Icon><span class="menu_title">集成商列表</span></MenuItem>
+        <MenuItem name="/companies?type=3"><Icon type="android-chat"></Icon></Icon><span class="menu_title">厂商列表</span></MenuItem>
+        <MenuItem name="/companies?type=4"><Icon type="chatboxes"></Icon></Icon><span class="menu_title">供货商列表</span></MenuItem>
         <MenuItem name="/companies?type=5"><Icon type="chatbubbles"></Icon><span class="menu_title">代理商列表</span></MenuItem>
         <MenuItem name="/contacts"><Icon type="android-contacts"></Icon><span class="menu_title">联系人列表</span></MenuItem>
       </Submenu>
@@ -74,7 +76,7 @@
         <MenuItem name="/stocks/exports"></MenuItem>
         <MenuItem name="/stocks/exports/1"></MenuItem>
       </Submenu>
-      <Submenu name="/users" v-if="$store.state.currentUser && $store.state.currentUser.role < 1">
+      <Submenu name="/users">
         <template slot="title"><Icon type="at"></Icon><span class="menu_title">管理系统</span></template>
         <MenuItem name="/groups"><Icon type="network"></Icon><span class="menu_title">部门列表</span></MenuItem>
         <MenuItem name="/users"><Icon type="person-stalker"></Icon><span class="menu_title">用户列表</span></MenuItem>
@@ -95,6 +97,12 @@ const menus = {
   'workorders': '/workorders',
   'workorder': '/workorders',
   'companies': '/companies',
+  // 'customers': '/companies',
+  // 'operators': '/companies',
+  // 'integrators': '/companies',
+  // 'vendors': '/companies',
+  'suppliers': '/purchases',
+  // 'agents': '/companies',
   'company': '/companies',
   'contacts': '/companies',
   'contact': '/companies',

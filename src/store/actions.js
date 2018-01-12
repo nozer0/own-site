@@ -1,5 +1,5 @@
 import api from '../services'
-const BASE = 'http://localhost:3000/v1'
+const BASE = 'http://192.168.100.220:3000/v1'
 
 function catchHandler (err, commit) {
   let status = err.response && err.response.status
@@ -65,17 +65,41 @@ export default {
       catchHandler(err, commit)
     }
   },
-  async FETCH_USERS ({ state, commit }) {
+  async FETCH_USERS ({ state, commit }, query) {
     try {
-      let data = await api(BASE, state.currentToken).fetchUsers()
-      if (data) commit('SET_USERS', data)
-      return data
+      if (state.FETCH_ALL_USERS) {
+        let users = state.users
+        let ret = []
+        let id = query && query.id
+        if (id) {
+          let u = users[id]
+          return u ? [u] : []
+        }
+        let group = query && query.group
+        for (let k in users) {
+          let u = users[k]
+          if (group) {
+            if (u.group === group) ret.push(u)
+          } else {
+            ret.push(u)
+          }
+        }
+        return ret
+      }
+      let ret = await api(BASE, state.currentToken).fetchUsers(query)
+      let data = ret && ret.data
+      if (!data) return
+      for (let d of data) {
+        d && commit('SET_USER', d)
+      }
+      if (!query) commit('FETCH_ALL_USERS', true)
+      return ret
     } catch (err) {
       catchHandler(err, commit)
     }
   },
   async GET_USER ({ state, commit }, id) {
-    if (state.users) return state.users.find(u => u._id === id)
+    if (state.FETCH_ALL_USERS || state.users[id]) return state.users[id]
     try {
       let data = await api(BASE, state.currentToken).getUser(id)
       if (data) commit('SET_USER', data)
@@ -84,14 +108,29 @@ export default {
       catchHandler(err, commit)
     }
   },
-  async GET_USERNAME ({ state, commit }, id) {
-    if (state.users) {
-      let user = state.users.find(u => u._id === id)
-      return user && user.name || ''
+  async QUERY_USER_NAMES ({ state, commit }, option) {
+    try {
+      if (typeof option === 'string') {
+        if (state.FETCH_ALL_USERNAMES || state.userNames[option]) return [state.userNames[option]]
+      }
+      let data = await api(BASE, state.currentToken).fetchUserNames(option)
+      if (data) {
+        commit('SET_USERNAMES', data)
+        if (!option) commit('FETCH_ALL_USERNAMES', true)
+      }
+    } catch (err) {
+      catchHandler(err, commit)
     }
+  },
+  async GET_USERNAME ({ state, commit }, id) {
+    if (state.FETCH_ALL_USERNAMES || state.userNames[id]) return state.userNames[id]
     try {
       let name = await api(BASE, state.currentToken).getUsername(id)
-      return name || ''
+      if (name) {
+        commit('SET_USERNAME', { _id: id, name })
+        return name
+      }
+      return ''
     } catch (err) {
       catchHandler(err, commit)
     }

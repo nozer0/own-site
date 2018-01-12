@@ -63,28 +63,41 @@ export default {
   },
   SET_USERS (state, users) {
     state.users = users
+    let usernames = state.userNames || (state.userNames = {})
+    for (let u of users) {
+      usernames[u._id] = u
+    }
+    state.FETCH_ALL_USERS = true
+    state.FETCH_ALL_USERNAMES = true
   },
-  SET_USER ({ users }, data) {
-    if (!users) return
+  FETCH_ALL_USERS (state, all) {
+    state.FETCH_ALL_USERS = all
+  },
+  SET_USER ({ users, userNames }, data) {
     let id = data._id
-    for (let i in users) {
-      let r = users[i]
-      if (r._id === id) {
-        users.splice(i, 1, data)
-        return
-      }
-    }
-    users.push(data)
+    users[id] = data
+    userNames[id] = data
   },
-  UNSET_USER ({ users }, id) {
-    if (!users) return
-    for (let i in users) {
-      let r = users[i]
-      if (r._id === id) {
-        users.splice(i, 1)
-        return
-      }
+  UNSET_USER ({ users, userNames }, id) {
+    delete users[id]
+    delete userNames[id]
+  },
+  SET_USERNAMES (state, names) {
+    let usernames = state.userNames || (state.userNames = {})
+    for (let u of names) {
+      usernames[u._id] = u
     }
+  },
+  SET_USERNAME (state, name) {
+    let d = state.userNames[name._id]
+    if (d) {
+      d.name = name.name
+    } else {
+      state.userNames[name._id] = name
+    }
+  },
+  FETCH_ALL_USERNAMES (state, all) {
+    state.FETCH_ALL_USERNAMES = all
   },
   SET_ROLES (state, roles) {
     state.roles = roles

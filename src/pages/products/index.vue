@@ -12,7 +12,7 @@
         </Select>
       </FormItem>
       <FormItem label="型号">
-        <ProductSelect ref="productSelect" style="width: 200px" queryOnEnter :disabled="loading || !currentUser" @on-change="handleProductQuery"></ProductSelect>
+        <ProductSelect ref="productSelect" style="width: 200px" queryOnEnter :disabled="loading || !currentUser" :category="query.category" :vendor="query.vendor" @on-change="handleProductQuery"></ProductSelect>
       </FormItem>
       <FormItem class="buttons">
         <Button type="ghost" size="small" icon="plus" :disabled="!addable" @click.stop.prevent="handleAdd">新增</Button>
@@ -33,15 +33,19 @@
         <Button @click="test"></Button>
       </FormItem>
     </Form>
-    <Table ref="table" :data="dataArray" :columns="columns" :loading="loading" size="small" highlight-row border stripe @on-current-change="handleSelect" @on-row-dblclick="handleEdit"></Table>
+    <Table ref="table" :data="dataArray" :columns="columns" :loading="loading" size="small" highlight-row border stripe @on-row-click="handleSelect" @on-row-dblclick="handleEdit"></Table>
     <div style="margin: 10px; overflow: hidden">
       <div style="text-align: right">
         <Page size="small" :page-size="query.size" :total="total" :current.sync="currentPage"></Page>
       </div>
     </div>
 
-    <Modal title="产品信息" v-model="isDialogVisible" width="720" transfer :mask-closable="false">
-      <Product ref="product" :cancelable="true" :readonly="disabled" :data="currentData" @save="handleSave" @cancel="handleCancel"></Product>
+    <Modal ref="modal" v-model="isDialogVisible" transfer :mask-closable="false" width="80%" :class-name="modalClass">
+      <div slot="header" style="margin-right: 20px" @click="toggleFullScreen">
+        产品信息
+        <Icon :type="modalClass === 'normal' ? 'arrow-expand' : 'arrow-shrink'" class="zoom" @click="toggleFullScreen"></Icon>
+      </div>
+      <Product v-if="currentData" ref="product" :cancelable="true" :readonly="disabled" :data="currentData" @save="handleSave" @cancel="handleCancel"></Product>
       <div slot="footer"></div>
     </Modal>
 
@@ -188,11 +192,13 @@ export default {
     handleCategoryChange (value) {
       this.query.offset = 0
       this.query.category = value
+      this.$refs.productSelect.init = false
       this.fetchArray()
     },
     handleVendorChange (value) {
       this.query.offset = 0
       this.query.vendor = value
+      this.$refs.productSelect.init = false
       this.fetchArray()
     },
     handleProductQuery (value, select) {
